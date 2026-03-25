@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx expo:*)",
+      "Bash(cmd /c \"taskkill /F /IM node.exe\")",
+      "Bash(cmd /c \"type C:\\\\Users\\\\81806\\\\Downloads\\\\CC\\\\trump-magic-app\\\\node_modules\\\\expo\\\\package.json\")",
+      "Bash(cmd /c \"node -e \"\"const p=require\\(''C:/Users/81806/Downloads/CC/trump-magic-app/node_modules/expo/package.json''\\); console.log\\(''expo:'', p.version\\); console.log\\(''rn peer:'', p.peerDependencies && p.peerDependencies[''react-native'']\\);\"\"\")",
+      "Bash(cmd /c \"cd /d C:\\\\Users\\\\81806\\\\Downloads\\\\CC\\\\trump-magic-app && node -e \"\"console.log\\(require\\(''./node_modules/expo/package.json''\\).version\\)\"\"\")",
+      "Bash(cmd /c \"cd /d C:\\\\Users\\\\81806\\\\Downloads\\\\CC\\\\trump-magic-app && node -p \"\"require\\(''./node_modules/expo/package.json''\\).version\"\"\")"
+    ]
+  }
+}
