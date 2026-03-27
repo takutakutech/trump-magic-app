@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { Accelerometer } from 'expo-sensors';
 
-const SHAKE_THRESHOLD = 1.8; // 重力加速度の倍率
-const DEBOUNCE_MS = 600;      // シェイク間の最小間隔(ms)
+const SHAKE_THRESHOLD = 1.5; // 重力加速度の倍率
+const DEBOUNCE_MS =150;      // シェイク間の最小間隔(ms)
 
-export function useShakeDetector(onShake: () => void) {
+export function useShakeDetector(onShake: () => void, enabled: boolean) {
   const lastShakeTime = useRef<number>(0);
   const onShakeRef = useRef(onShake);
 
@@ -14,6 +14,8 @@ export function useShakeDetector(onShake: () => void) {
   }, [onShake]);
 
   useEffect(() => {
+    if (!enabled) return;
+
     Accelerometer.setUpdateInterval(100);
 
     const subscription = Accelerometer.addListener(({ x, y, z }) => {
@@ -29,5 +31,5 @@ export function useShakeDetector(onShake: () => void) {
     });
 
     return () => subscription.remove();
-  }, []); // マウント時だけ subscribe
+  }, [enabled]);
 }
