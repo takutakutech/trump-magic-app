@@ -1,7 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, StyleSheet, View } from 'react-native';
 
 export const MAX_PHASE = 12;
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const CARD_RATIO = 1.4; // 縦横比（実際のトランプと同じ）
+const cardWidth = Math.min(screenWidth * 0.88, (screenHeight * 0.88) / CARD_RATIO);
+const cardHeight = cardWidth * CARD_RATIO;
 
 type Props = {
   phase: number;
@@ -10,42 +15,41 @@ type Props = {
 
 export function MagicCard({ phase, isFaceUp }: Props) {
   const clampedPhase = Math.min(phase, MAX_PHASE);
-  // phase 0-1 はバッファ（スペード非表示）、phase 2〜12 で線形にフェードイン
+  // phase 0-1 はバッファ（スペードA非表示）、phase 2〜12 で線形にフェードイン
   const spadeOpacity = clampedPhase <= 1 ? 0 : (clampedPhase - 1) / (MAX_PHASE - 1);
 
   return (
     <View style={styles.card}>
       {/* 裏面レイヤー */}
-      <View style={[StyleSheet.absoluteFill, styles.cardBack, { opacity: isFaceUp ? 0 : 1 }]}>
-        <View style={styles.backPattern}>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <View key={i} style={styles.backRow}>
-              {Array.from({ length: 4 }).map((_, j) => (
-                <Text key={j} style={styles.backSymbol}>♦</Text>
-              ))}
-            </View>
-          ))}
-        </View>
-      </View>
+      <Image
+        source={require('../../assets/cards/trump_back.png')}
+        style={[StyleSheet.absoluteFill, styles.cardImage, { opacity: isFaceUp ? 0 : 1 }]}
+        resizeMode="cover"
+      />
 
-      {/* 表面レイヤー */}
-      <View style={[StyleSheet.absoluteFill, styles.cardFace, { opacity: isFaceUp ? 1 : 0 }]}>
-        <Text style={[styles.cornerLabel, { opacity: spadeOpacity }]}>A♠</Text>
-        <Text style={[styles.centerSuit, { opacity: spadeOpacity }]}>♠</Text>
-        <Text style={[styles.cornerLabel, styles.cornerLabelBottom, { opacity: spadeOpacity }]}>
-          A♠
-        </Text>
-      </View>
+      {/* 表面レイヤー①：ダイヤ8（常に土台として表示） */}
+      <Image
+        source={require('../../assets/cards/trump_dia_8.png')}
+        style={[StyleSheet.absoluteFill, styles.cardImage, { opacity: isFaceUp ? 1 : 0 }]}
+        resizeMode="cover"
+      />
+
+      {/* 表面レイヤー②：スペードA（シェイクでフェードイン） */}
+      <Image
+        source={require('../../assets/cards/trump_spade_13.png')}
+        style={[StyleSheet.absoluteFill, styles.cardImage, { opacity: isFaceUp ? spadeOpacity : 0 }]}
+        resizeMode="cover"
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    width: 280,
-    height: 392,
+    width: cardWidth,
+    height: cardHeight,
     borderRadius: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#000',
     shadowColor: '#a78bfa',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.5,
@@ -53,49 +57,9 @@ const styles = StyleSheet.create({
     elevation: 12,
     overflow: 'hidden',
   },
-  cardBack: {
-    backgroundColor: '#1e3a8a',
-    justifyContent: 'center',
-    alignItems: 'center',
+  cardImage: {
+    width: cardWidth,
+    height: cardHeight,
     borderRadius: 16,
-    padding: 12,
-  },
-  backPattern: {
-    gap: 8,
-  },
-  backRow: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  backSymbol: {
-    color: '#93c5fd',
-    fontSize: 22,
-    opacity: 0.7,
-  },
-  cardFace: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 12,
-  },
-  cornerLabel: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#1a1a1a',
-  },
-  cornerLabelBottom: {
-    top: undefined,
-    left: undefined,
-    bottom: 12,
-    right: 12,
-    transform: [{ rotate: '180deg' }],
-  },
-  centerSuit: {
-    fontSize: 128,
-    textAlign: 'center',
-    marginTop: 100,
-    color: '#1a1a1a',
   },
 });
